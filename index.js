@@ -23,7 +23,7 @@ app.post("/create-product", async (req, res) => {
     const form = new FormData();
     form.append("name", `Donation ${amount} Robux`);
     form.append("description", `Dynamic donation product for ${amount} Robux`);
-    form.append("price", amount);
+    form.append("price", amount.toString());
     form.append("isForSale", "true");
 
     const response = await fetch(
@@ -40,11 +40,15 @@ app.post("/create-product", async (req, res) => {
 
     const data = await response.json();
 
+    console.log("Roblox API response:", data);
+
     if (!response.ok) {
       return res.status(500).json({ error: data });
     }
 
-    res.json({ productId: data.id });
+    res.json({
+      productId: data.developerProduct.id
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
