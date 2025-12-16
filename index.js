@@ -8,10 +8,6 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Backend running ✅");
-});
-
 app.post("/create-product", async (req, res) => {
   const { amount } = req.body;
 
@@ -23,7 +19,7 @@ app.post("/create-product", async (req, res) => {
     const form = new FormData();
     form.append("name", `Donation ${amount} Robux`);
     form.append("description", `Dynamic donation product for ${amount} Robux`);
-    form.append("price", amount);
+    form.append("price", amount.toString()); // ✅ must be string
     form.append("isForSale", "true");
 
     const response = await fetch(
@@ -40,8 +36,16 @@ app.post("/create-product", async (req, res) => {
 
     const data = await response.json();
 
+    console.log("Roblox API response:", data); // ✅ check what you actually get
+
     if (!response.ok) {
-      return res.status(500).json({ error: data });
+      return res.status(response.status).json({ error: data });
+    }
+
+    // Make sure data.id exists
+    if (!data.id) {
+      console.error("No product ID returned:", data);
+      return res.status(500).json({ error: "No product ID returned" });
     }
 
     res.json({ productId: data.id });
@@ -52,8 +56,6 @@ app.post("/create-product", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
