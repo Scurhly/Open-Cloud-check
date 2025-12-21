@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 app.post("/create-product", async (req, res) => {
   const { amount } = req.body;
 
-  if (!Number.isInteger(amount) || amount < 1 || amount > 20000) {
+  if (!Number.isInteger(amount) || amount < 5 || amount > 20000) {
     return res.status(400).json({ error: "Invalid amount" });
   }
 
